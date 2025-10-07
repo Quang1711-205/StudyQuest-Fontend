@@ -20,7 +20,7 @@ export function TopBar({ onMenuClick }: TopBarProps) {
   const xpProgress = (user.xp / xpToNextLevel) * 100
 
   return (
-    <div className="fixed top-0 left-0 md:left-20 right-0 h-16 bg-card/95 backdrop-blur-xl border-b border-border/50 flex items-center justify-between px-4 lg:px-6 z-30 transition-all duration-300 shadow-sm min-[1200px]:left-[384px]">
+    <div className="fixed top-0 left-0 md:left-20 xl:left-64 right-0 h-16 bg-card/95 backdrop-blur-xl border-b border-border/50 flex items-center justify-between px-4 lg:px-6 z-30 transition-all duration-300 shadow-sm">
       <Button
         variant="ghost"
         size="icon"

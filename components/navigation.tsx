@@ -13,7 +13,7 @@ const navItems = [
   { href: "/map", icon: Map, label: "Map" },
   { href: "/practice", icon: Dumbbell, label: "Practice" },
   { href: "/missions", icon: Target, label: "Missions" },
-  { href: "/tests", icon: FileText, label: "Tests" },
+  { href: "/test", icon: FileText, label: "Test" },
   { href: "/shop", icon: ShoppingBag, label: "Shop" },
   { href: "/leaderboard", icon: Trophy, label: "Leaderboard" },
   { href: "/profile", icon: User, label: "Profile" },
@@ -43,13 +43,13 @@ export function Navigation({ isOpen = false, onClose }: NavigationProps) {
         />
       )}
 
-<nav
-  className={cn(
-    "fixed top-0 h-screen bg-card border-r border-border flex flex-col py-6 transition-all duration-300 z-50",
-    "md:left-0 md:w-20 min-[1200px]:w-96 min-[1200px]:left-0", // ← Đã thêm min-[1200px]:left-0
-    isOpen ? "left-0 w-64" : "-left-64 w-64 md:left-0",
-  )}
->
+      <nav
+        className={cn(
+          "fixed top-0 h-screen bg-card border-r border-border flex flex-col py-6 transition-all duration-300 z-50",
+          "md:left-0 md:w-20 xl:w-64 xl:left-0",
+          isOpen ? "left-0 w-64" : "-left-64 w-64 md:left-0",
+        )}
+      >
         <button
           onClick={onClose}
           className="md:hidden absolute top-4 right-4 p-2 rounded-lg hover:bg-muted transition-colors"
@@ -58,21 +58,21 @@ export function Navigation({ isOpen = false, onClose }: NavigationProps) {
           <X className="w-5 h-5" />
         </button>
 
-        <Link href="/dashboard" className="mb-8 px-4 flex items-center gap-3" onClick={handleLinkClick}>
+        <Link href="/dashboard" className="mb-8 px-4 xl:px-4 flex items-center gap-3" onClick={handleLinkClick}>
           <div className="w-12 h-12 bg-gradient-to-br from-primary via-secondary to-accent rounded-2xl flex items-center justify-center text-white font-bold text-xl shrink-0 shadow-lg">
             SQ
           </div>
           <span
             className={cn(
               "font-bold text-xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent transition-opacity duration-200 whitespace-nowrap",
-              isOpen ? "block md:hidden min-[1200px]:block" : "hidden min-[1200px]:block",
+              isOpen ? "block md:hidden xl:block" : "hidden md:hidden xl:block",
             )}
           >
             StudyQuest
           </span>
         </Link>
 
-        <div className="flex-1 flex flex-col gap-2 px-3">
+        <div className="flex-1 flex flex-col gap-2 px-3 xl:px-3">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
@@ -84,10 +84,10 @@ export function Navigation({ isOpen = false, onClose }: NavigationProps) {
                 onClick={handleLinkClick}
                 className={cn(
                   "flex items-center gap-3 h-12 rounded-xl transition-all duration-200 shrink-0",
-                  "px-3 md:px-3 min-[1200px]:px-4",
+                  "px-3 md:px-3 xl:px-3",
                   isOpen
-                    ? "justify-start md:justify-center min-[1200px]:justify-start"
-                    : "justify-center min-[1200px]:justify-start",
+                    ? "justify-start md:justify-center xl:justify-start"
+                    : "justify-center xl:justify-start",
                   isActive
                     ? "bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground hover:shadow-md",
@@ -98,7 +98,7 @@ export function Navigation({ isOpen = false, onClose }: NavigationProps) {
                 <span
                   className={cn(
                     "font-medium transition-opacity duration-200 whitespace-nowrap",
-                    isOpen ? "block md:hidden min-[1200px]:block" : "hidden min-[1200px]:block",
+                    isOpen ? "block md:hidden xl:block" : "hidden md:hidden xl:block",
                   )}
                 >
                   {item.label}
@@ -120,15 +120,15 @@ export function Navigation({ isOpen = false, onClose }: NavigationProps) {
           </Button>
         </div>
 
-        <div className="px-3 shrink-0">
+        <div className="px-3 xl:px-3 shrink-0">
           <Button
             variant="ghost"
             onClick={logout}
             className={cn(
               "w-full h-12 rounded-xl hover:bg-destructive/10 hover:text-destructive",
               isOpen
-                ? "justify-start px-4 md:justify-center md:px-0 min-[1200px]:justify-start min-[1200px]:px-4"
-                : "justify-center min-[1200px]:justify-start min-[1200px]:px-4",
+                ? "justify-start px-4 md:justify-center md:px-0 xl:justify-start xl:px-3"
+                : "justify-center xl:justify-start xl:px-3",
             )}
             title="Logout"
           >
@@ -137,8 +137,8 @@ export function Navigation({ isOpen = false, onClose }: NavigationProps) {
               className={cn(
                 "font-medium transition-opacity duration-200 whitespace-nowrap",
                 isOpen
-                  ? "block ml-3 md:hidden min-[1200px]:block min-[1200px]:ml-3"
-                  : "hidden min-[1200px]:block min-[1200px]:ml-3",
+                  ? "block ml-3 md:hidden xl:block xl:ml-3"
+                  : "hidden md:hidden xl:block xl:ml-3",
               )}
             >
               Logout

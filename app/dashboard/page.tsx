@@ -38,7 +38,7 @@ export default function DashboardPage() {
       <Navigation isOpen={isOpen} onClose={closeNav} />
       <TopBar onMenuClick={toggleNav} />
 
-      <main className="md:ml-20 min-[1200px]:ml-96 mt-16 p-6 md:p-8 transition-all duration-300">
+      <main className="md:ml-20 xl:ml-64 mt-16 p-6 md:p-8 transition-all duration-300">
         <div className="max-w-7xl mx-auto">
           {/* Welcome Section */}
           <div className="mb-8">

@@ -78,7 +78,8 @@ export default function TestsPage() {
       <Navigation />
       <TopBar />
 
-      <main className="md:ml-20 min-[1200px]:ml-80 mt-16 p-4 md:p-8 transition-all duration-300">
+      {/* <main className="md:ml-20 min-[1200px]:ml-80 mt-16 p-4 md:p-8 transition-all duration-300"> */}
+      <main className="md:ml-20 xl:ml-64 mt-16 p-8 transition-all duration-300">
         <div className="max-w-6xl mx-auto space-y-8">
           <div>
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-2">

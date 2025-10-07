@@ -72,7 +72,8 @@ export default function ProfilePage() {
       <TopBar onMenuClick={toggleNav} />
 
       {/* Profile Header */}
-      <main className="md:ml-20 min-[1200px]:ml-80 mt-16 p-8 transition-all duration-300">
+      {/* <main className="md:ml-20 min-[1200px]:ml-80 mt-16 p-8 transition-all duration-300"> */}
+      <main className="md:ml-20 xl:ml-64 mt-16 p-8 transition-all duration-300">
         <div className="max-w-6xl mx-auto">
           <Card className="mb-8 border-2">
             <CardContent className="pt-6">

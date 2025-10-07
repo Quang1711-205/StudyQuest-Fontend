@@ -202,7 +202,8 @@ export default function LessonPage() {
         <TopBar />
         <Confetti active={showConfetti} onComplete={() => setShowConfetti(false)} />
 
-        <main className="md:ml-20 min-[1200px]:ml-80 mt-16 p-4 md:p-8 transition-all duration-300">
+        {/* <main className="md:ml-20 min-[1200px]:ml-80 mt-16 p-4 md:p-8 transition-all duration-300"> */}
+        <main className="md:ml-20 xl:ml-64 mt-16 p-4 md:p-8 transition-all duration-300">
           <div className="max-w-2xl mx-auto">
             <Card className="text-center border-2 border-success shadow-2xl">
               <CardHeader>
