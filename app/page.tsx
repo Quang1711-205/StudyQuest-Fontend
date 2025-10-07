@@ -1,103 +1,158 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import type React from "react"
+
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/lib/auth-context"
+import { Button } from "@/components/ui/button"
+import { Sparkles, Trophy, Target, Zap, Users, BookOpen } from "lucide-react"
+import Link from "next/link"
+
+export default function LandingPage() {
+  const { user, isLoading } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.push("/dashboard")
+    }
+  }, [user, isLoading, router])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    )
+  }
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      {/* Hero Section */}
+      <div className="container mx-auto px-4 py-20">
+        <div className="text-center max-w-4xl mx-auto">
+          {/* Logo */}
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-2xl mb-8 animate-float">
+            <span className="text-3xl font-bold text-white">SQ</span>
+          </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+          {/* Headline */}
+          <h1 className="text-6xl md:text-7xl font-bold mb-6 text-balance">
+            Learn Languages
+            <span className="block bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              Like a Game
+            </span>
+          </h1>
+
+          <p className="text-xl text-muted-foreground mb-12 text-pretty max-w-2xl mx-auto">
+            Master new languages through engaging missions, earn rewards, compete with friends, and level up your skills
+            in the most fun way possible.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-20">
+            <Link href="/register">
+              <Button size="lg" className="text-lg px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                <Sparkles className="w-5 h-5 mr-2" />
+                Start Learning Free
+              </Button>
+            </Link>
+            <Link href="/login">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-6 rounded-xl bg-transparent">
+                Sign In
+              </Button>
+            </Link>
+          </div>
+
+          {/* Features Grid */}
+          <div className="grid md:grid-cols-3 gap-6 mt-20">
+            <FeatureCard
+              icon={<Target className="w-8 h-8" />}
+              title="Daily Missions"
+              description="Complete fun challenges and earn rewards every day"
+              color="from-primary to-blue-600"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <FeatureCard
+              icon={<Trophy className="w-8 h-8" />}
+              title="Compete & Win"
+              description="Climb the leaderboard and show off your skills"
+              color="from-accent to-orange-600"
+            />
+            <FeatureCard
+              icon={<Zap className="w-8 h-8" />}
+              title="Level Up Fast"
+              description="Gain XP, unlock badges, and track your progress"
+              color="from-secondary to-pink-600"
+            />
+            <FeatureCard
+              icon={<BookOpen className="w-8 h-8" />}
+              title="Structured Path"
+              description="Follow a clear learning map from beginner to expert"
+              color="from-purple-500 to-indigo-600"
+            />
+            <FeatureCard
+              icon={<Users className="w-8 h-8" />}
+              title="Practice Zone"
+              description="Master listening, speaking, reading, and writing"
+              color="from-teal-500 to-cyan-600"
+            />
+            <FeatureCard
+              icon={<Sparkles className="w-8 h-8" />}
+              title="Shop & Customize"
+              description="Unlock avatars, backgrounds, and power-ups"
+              color="from-pink-500 to-rose-600"
+            />
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      {/* Stats Section */}
+      <div className="bg-white/50 backdrop-blur-sm py-16 mt-20">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-4 gap-8 text-center">
+            <StatCard number="10M+" label="Active Learners" />
+            <StatCard number="50+" label="Languages" />
+            <StatCard number="1000+" label="Lessons" />
+            <StatCard number="4.9★" label="User Rating" />
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
+}
+
+function FeatureCard({
+  icon,
+  title,
+  description,
+  color,
+}: {
+  icon: React.ReactNode
+  title: string
+  description: string
+  color: string
+}) {
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all border border-border">
+      <div
+        className={`inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-br ${color} text-white mb-4`}
+      >
+        {icon}
+      </div>
+      <h3 className="text-xl font-bold mb-2">{title}</h3>
+      <p className="text-muted-foreground text-sm">{description}</p>
+    </div>
+  )
+}
+
+function StatCard({ number, label }: { number: string; label: string }) {
+  return (
+    <div>
+      <div className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
+        {number}
+      </div>
+      <div className="text-muted-foreground">{label}</div>
+    </div>
+  )
 }
