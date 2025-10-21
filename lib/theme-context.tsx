@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { createContext, useContext, useEffect, useState } from "react"
 
 type Theme = "light" | "dark"
@@ -19,17 +18,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true)
-    const savedTheme = localStorage.getItem("theme") as Theme
-    if (savedTheme) {
-      setTheme(savedTheme)
-      document.documentElement.classList.toggle("dark", savedTheme === "dark")
+    // Check system preference
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+    if (prefersDark) {
+      setTheme("dark")
+      document.documentElement.classList.add("dark")
     }
   }, [])
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light"
     setTheme(newTheme)
-    localStorage.setItem("theme", newTheme)
     document.documentElement.classList.toggle("dark", newTheme === "dark")
   }
 

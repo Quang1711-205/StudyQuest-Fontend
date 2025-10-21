@@ -151,6 +151,9 @@
 // }
 
 
+
+
+
 "use client"
 
 import Link from "next/link"
@@ -198,17 +201,17 @@ export function Navigation({ isOpen = false, onClose }: NavigationProps) {
 
       <nav
         className={cn(
-          "fixed top-0 h-screen bg-card border-r border-border flex flex-col py-6 transition-all duration-300 z-50",
+          "fixed top-0 h-screen bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 flex flex-col py-6 transition-all duration-300 z-50",
           "md:left-0 md:w-20 xl:w-64 xl:left-0",
           isOpen ? "left-0 w-64" : "-left-64 w-64 md:left-0",
         )}
       >
         <button
           onClick={onClose}
-          className="md:hidden absolute top-4 right-4 p-2 rounded-lg hover:bg-muted transition-colors"
+          className="md:hidden absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
           aria-label="Close menu"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         </button>
 
         <Link href="/dashboard" className="mb-8 px-4 xl:px-4 flex items-center gap-3" onClick={handleLinkClick}>
@@ -243,7 +246,7 @@ export function Navigation({ isOpen = false, onClose }: NavigationProps) {
                     : "justify-center xl:justify-start",
                   isActive
                     ? "bg-gradient-to-r from-sky-400 to-blue-500 text-white shadow-lg shadow-sky-400/30"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground hover:shadow-md",
+                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white hover:shadow-md",
                 )}
                 title={item.label}
               >
@@ -265,7 +268,7 @@ export function Navigation({ isOpen = false, onClose }: NavigationProps) {
           <Button
             variant="ghost"
             onClick={toggleTheme}
-            className="w-full h-12 rounded-xl hover:bg-muted justify-start px-4"
+            className="w-full h-12 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 justify-start px-4 text-gray-600 dark:text-gray-400"
             title={theme === "light" ? "Dark Mode" : "Light Mode"}
           >
             {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
@@ -278,7 +281,7 @@ export function Navigation({ isOpen = false, onClose }: NavigationProps) {
             variant="ghost"
             onClick={logout}
             className={cn(
-              "w-full h-12 rounded-xl hover:bg-destructive/10 hover:text-destructive",
+              "w-full h-12 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 text-gray-600 dark:text-gray-400",
               isOpen
                 ? "justify-start px-4 md:justify-center md:px-0 xl:justify-start xl:px-3"
                 : "justify-center xl:justify-start xl:px-3",

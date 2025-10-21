@@ -1144,18 +1144,19 @@
 // }
 
 
+
 "use client"
 
 import { useAuth } from "@/lib/auth-context"
 import { Navigation } from "@/components/navigation"
-import { TopBar } from "@/components/top-bar"
+import TopBar from "@/components/top-bar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Headphones, Mic, BookOpen, PenTool, ArrowLeft, Star, Clock, TrendingUp, Lock } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useParams } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useNavigation } from "@/lib/navigation-context"
 
 const skillConfig = {
@@ -1189,263 +1190,63 @@ const skillConfig = {
   },
 }
 
-// Mock data cho các bài luyện tập
-const lessonsBySkill = {
-  listening: [
-    {
-      id: "l1",
-      title: "Daily Conversations",
-      level: "Beginner",
-      duration: "10 min",
-      xp: 100,
-      questions: 5,
-      description: "Practice listening to everyday conversations at home, school, and work",
-      completed: false,
-      locked: false,
-    },
-    {
-      id: "l2",
-      title: "Travel & Transportation",
-      level: "Beginner",
-      duration: "12 min",
-      xp: 120,
-      questions: 6,
-      description: "Learn vocabulary about airports, hotels, and getting around",
-      completed: true,
-      locked: false,
-    },
-    {
-      id: "l3",
-      title: "News & Current Events",
-      level: "Intermediate",
-      duration: "15 min",
-      xp: 150,
-      questions: 7,
-      description: "Listen to news reports and discussions about current topics",
-      completed: false,
-      locked: false,
-    },
-    {
-      id: "l4",
-      title: "Business Meetings",
-      level: "Intermediate",
-      duration: "18 min",
-      xp: 180,
-      questions: 8,
-      description: "Understand professional workplace conversations and meetings",
-      completed: false,
-      locked: true,
-    },
-    {
-      id: "l5",
-      title: "Academic Lectures",
-      level: "Advanced",
-      duration: "20 min",
-      xp: 200,
-      questions: 10,
-      description: "Comprehend complex academic content and university lectures",
-      completed: false,
-      locked: true,
-    },
-  ],
-  speaking: [
-    {
-      id: "s1",
-      title: "Pronunciation Basics",
-      level: "Beginner",
-      duration: "12 min",
-      xp: 100,
-      questions: 8,
-      description: "Master fundamental pronunciation patterns and sounds",
-      completed: true,
-      locked: false,
-    },
-    {
-      id: "s2",
-      title: "Everyday Phrases",
-      level: "Beginner",
-      duration: "10 min",
-      xp: 100,
-      questions: 6,
-      description: "Learn common expressions used in daily situations",
-      completed: false,
-      locked: false,
-    },
-    {
-      id: "s3",
-      title: "Conversation Practice",
-      level: "Intermediate",
-      duration: "15 min",
-      xp: 150,
-      questions: 7,
-      description: "Practice natural conversation flow and responses",
-      completed: false,
-      locked: false,
-    },
-    {
-      id: "s4",
-      title: "Job Interviews",
-      level: "Intermediate",
-      duration: "20 min",
-      xp: 180,
-      questions: 9,
-      description: "Prepare for professional interview situations",
-      completed: false,
-      locked: true,
-    },
-    {
-      id: "s5",
-      title: "Presentation Skills",
-      level: "Advanced",
-      duration: "25 min",
-      xp: 200,
-      questions: 10,
-      description: "Deliver effective presentations with confidence",
-      completed: false,
-      locked: true,
-    },
-  ],
-  reading: [
-    {
-      id: "r1",
-      title: "Short Stories",
-      level: "Beginner",
-      duration: "15 min",
-      xp: 120,
-      questions: 8,
-      description: "Read and understand simple narratives and tales",
-      completed: true,
-      locked: false,
-    },
-    {
-      id: "r2",
-      title: "Emails & Messages",
-      level: "Beginner",
-      duration: "10 min",
-      xp: 100,
-      questions: 6,
-      description: "Comprehend everyday written communication",
-      completed: true,
-      locked: false,
-    },
-    {
-      id: "r3",
-      title: "Articles & Essays",
-      level: "Intermediate",
-      duration: "20 min",
-      xp: 160,
-      questions: 10,
-      description: "Analyze informative and opinion texts",
-      completed: false,
-      locked: false,
-    },
-    {
-      id: "r4",
-      title: "Scientific Reports",
-      level: "Intermediate",
-      duration: "25 min",
-      xp: 190,
-      questions: 12,
-      description: "Understand technical and scientific writing",
-      completed: false,
-      locked: true,
-    },
-    {
-      id: "r5",
-      title: "Academic Texts",
-      level: "Advanced",
-      duration: "30 min",
-      xp: 220,
-      questions: 15,
-      description: "Comprehend complex academic writing and research",
-      completed: false,
-      locked: true,
-    },
-  ],
-  writing: [
-    {
-      id: "w1",
-      title: "Basic Sentences",
-      level: "Beginner",
-      duration: "10 min",
-      xp: 90,
-      questions: 8,
-      description: "Write clear and correct simple sentences",
-      completed: true,
-      locked: false,
-    },
-    {
-      id: "w2",
-      title: "Paragraph Writing",
-      level: "Beginner",
-      duration: "15 min",
-      xp: 120,
-      questions: 6,
-      description: "Organize ideas into coherent paragraphs",
-      completed: false,
-      locked: false,
-    },
-    {
-      id: "w3",
-      title: "Essay Writing",
-      level: "Intermediate",
-      duration: "25 min",
-      xp: 180,
-      questions: 8,
-      description: "Compose structured argumentative essays",
-      completed: false,
-      locked: false,
-    },
-    {
-      id: "w4",
-      title: "Business Writing",
-      level: "Intermediate",
-      duration: "20 min",
-      xp: 170,
-      questions: 7,
-      description: "Write professional emails and reports",
-      completed: false,
-      locked: true,
-    },
-    {
-      id: "w5",
-      title: "Creative Writing",
-      level: "Advanced",
-      duration: "30 min",
-      xp: 250,
-      questions: 10,
-      description: "Express ideas creatively through storytelling",
-      completed: false,
-      locked: true,
-    },
-  ],
-}
+type Difficulty = "beginner" | "intermediate" | "advanced"
 
-const levelColors = {
-  Beginner: "bg-green-500",
-  Intermediate: "bg-yellow-500",
-  Advanced: "bg-red-500",
+const levelColors: Record<Difficulty, string> = {
+  beginner: "bg-green-500 dark:bg-green-600",
+  intermediate: "bg-yellow-500 dark:bg-yellow-600",
+  advanced: "bg-red-500 dark:bg-red-600",
 }
 
 export default function PracticeSkillPage() {
   const { user, isLoading } = useAuth()
   const router = useRouter()
   const params = useParams()
-  const { isOpen, closeNav } = useNavigation()
+  const { isOpen, closeNav, toggleNav } = useNavigation()
   
   const skillId = params.skill as keyof typeof skillConfig
   const skill = skillConfig[skillId]
-  const lessons = lessonsBySkill[skillId] || []
+  
+  const [lessons, setLessons] = useState<any[]>([])
+  const [isLoadingLessons, setIsLoadingLessons] = useState(true)
 
   useEffect(() => {
     if (!isLoading && !user) {
       router.push("/login")
+      return
     }
-  }, [user, isLoading, router])
+
+    if (user && skillId) {
+      loadLessons()
+    }
+  }, [user, isLoading, router, skillId])
+
+  const loadLessons = async () => {
+    try {
+      setIsLoadingLessons(true)
+      const response = await fetch(
+        `http://localhost:3000/api/practice/lessons?skillType=${skillId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+        }
+      )
+      
+      if (!response.ok) throw new Error('Failed to fetch lessons')
+      
+      const data = await response.json()
+      setLessons(data)
+    } catch (error) {
+      console.error("Error loading lessons:", error)
+    } finally {
+      setIsLoadingLessons(false)
+    }
+  }
 
   if (isLoading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
         <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     )
@@ -1453,32 +1254,32 @@ export default function PracticeSkillPage() {
 
   if (!skill) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-xl">Skill not found</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+        <p className="text-xl text-slate-900 dark:text-white">Skill not found</p>
       </div>
     )
   }
 
   const Icon = skill.icon
-  const completedCount = lessons.filter((l) => l.completed).length
-  const totalTime = lessons.reduce((acc, l) => acc + parseInt(l.duration), 0)
+  const completedCount = lessons.filter((l) => l.practiceCount > 0).length
+  const totalTime = lessons.reduce((acc, l) => acc + (l.durationMinutes || 0), 0)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
       <Navigation isOpen={isOpen} onClose={closeNav} />
-      <TopBar onMenuClick={() => {}} />
+      <TopBar onMenuClick={toggleNav} />
 
       <main className="md:ml-20 xl:ml-64 mt-16 p-4 sm:p-6 lg:p-8 transition-all duration-300">
         <div className="max-w-5xl mx-auto">
-          {/* Back Button - Thu nhỏ trên mobile */}
+          {/* Back Button */}
           <Link href="/practice">
-            <Button variant="ghost" className="mb-4 sm:mb-6 hover:bg-muted text-sm sm:text-base">
+            <Button variant="ghost" className="mb-4 sm:mb-6 hover:bg-muted text-sm sm:text-base text-slate-900 dark:text-white">
               <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
               Back to Practice Hub
             </Button>
           </Link>
 
-          {/* Header - Responsive */}
+          {/* Header */}
           <div className="mb-8 sm:mb-10 lg:mb-12">
             <div className="flex items-center gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
               <div
@@ -1490,18 +1291,18 @@ export default function PracticeSkillPage() {
                 <Icon className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 text-white" />
               </div>
               <div className="min-w-0 flex-1">
-                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mb-1 sm:mb-2 truncate">
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mb-1 sm:mb-2 truncate text-slate-900 dark:text-white">
                   {skill.name} Practice
                 </h1>
-                <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted-foreground line-clamp-2">
+                <p className="text-xs sm:text-sm md:text-base lg:text-lg text-slate-600 dark:text-slate-400 line-clamp-2">
                   {skill.description}
                 </p>
               </div>
             </div>
 
-            {/* Stats Overview - Responsive Grid */}
+            {/* Stats Overview */}
             <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
-              <Card className="border-none shadow-md">
+              <Card className="border-none shadow-md bg-white dark:bg-slate-800">
                 <CardContent className="p-2.5 sm:p-3 md:p-4 lg:p-5 flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
                   <div
                     className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-md flex-shrink-0"
@@ -1512,15 +1313,17 @@ export default function PracticeSkillPage() {
                     <Star className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                   </div>
                   <div className="text-center sm:text-left min-w-0">
-                    <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-semibold uppercase tracking-wide truncate">
+                    <p className="text-[9px] sm:text-[10px] md:text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wide truncate">
                       Total
                     </p>
-                    <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">{lessons.length}</p>
+                    <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white">
+                      {lessons.length}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-md">
+              <Card className="border-none shadow-md bg-white dark:bg-slate-800">
                 <CardContent className="p-2.5 sm:p-3 md:p-4 lg:p-5 flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
                   <div
                     className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-md flex-shrink-0"
@@ -1531,17 +1334,17 @@ export default function PracticeSkillPage() {
                     <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                   </div>
                   <div className="text-center sm:text-left min-w-0">
-                    <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-semibold uppercase tracking-wide truncate">
+                    <p className="text-[9px] sm:text-[10px] md:text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wide truncate">
                       Done
                     </p>
-                    <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-green-600">
+                    <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-green-600 dark:text-green-500">
                       {completedCount}/{lessons.length}
                     </p>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="border-none shadow-md">
+              <Card className="border-none shadow-md bg-white dark:bg-slate-800">
                 <CardContent className="p-2.5 sm:p-3 md:p-4 lg:p-5 flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
                   <div
                     className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-md flex-shrink-0"
@@ -1552,10 +1355,12 @@ export default function PracticeSkillPage() {
                     <Clock className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
                   </div>
                   <div className="text-center sm:text-left min-w-0">
-                    <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-semibold uppercase tracking-wide truncate">
+                    <p className="text-[9px] sm:text-[10px] md:text-xs text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-wide truncate">
                       Time
                     </p>
-                    <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold">{totalTime}m</p>
+                    <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-slate-900 dark:text-white">
+                      {totalTime}m
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -1564,103 +1369,124 @@ export default function PracticeSkillPage() {
 
           {/* Lessons List */}
           <div>
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 sm:mb-6 lg:mb-8 flex items-center gap-2 sm:gap-3">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 sm:mb-6 lg:mb-8 flex items-center gap-2 sm:gap-3 text-slate-900 dark:text-white">
               <span className="text-xl sm:text-2xl">📚</span>
               <span className="truncate">Choose Your Lesson</span>
             </h2>
 
-            <div className="space-y-3 sm:space-y-4 lg:space-y-5">
-              {lessons.map((lesson) => (
-                <Card
-                  key={lesson.id}
-                  className={`relative overflow-hidden border-none shadow-lg transition-all bg-card ${
-                    !lesson.locked ? "hover:shadow-2xl hover:-translate-y-1" : "opacity-60"
-                  }`}
-                >
-                  <div
-                    className="absolute top-0 left-0 right-0 h-1 sm:h-1.5"
-                    style={{
-                      background: `linear-gradient(90deg, ${skill.colorStart}, ${skill.colorEnd})`,
-                    }}
-                  />
+            {isLoadingLessons ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full" />
+              </div>
+            ) : lessons.length === 0 ? (
+              <Card className="border-none shadow-lg bg-white dark:bg-slate-800">
+                <CardContent className="p-8 text-center">
+                  <p className="text-slate-600 dark:text-slate-400">No lessons available for this skill yet.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3 sm:space-y-4 lg:space-y-5">
+                {lessons.map((lesson) => (
+                  <Card
+                    key={lesson.id}
+                    className={`relative overflow-hidden border-none shadow-lg transition-all bg-white dark:bg-slate-800 ${
+                      !lesson.isLocked ? "hover:shadow-2xl hover:-translate-y-1" : "opacity-60"
+                    }`}
+                  >
+                    <div
+                      className="absolute top-0 left-0 right-0 h-1 sm:h-1.5"
+                      style={{
+                        background: `linear-gradient(90deg, ${skill.colorStart}, ${skill.colorEnd})`,
+                      }}
+                    />
 
-                  {/* Status badges - positioned to not overlap with level badge */}
-                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4 lg:top-5 lg:right-5 flex flex-col items-end gap-1.5 sm:gap-2">
-                    {lesson.completed && (
-                      <div className="bg-green-500 text-white px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 shadow-lg">
-                        <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-white" />
-                        <span className="hidden sm:inline">Completed</span>
-                        <span className="sm:hidden">✓</span>
-                      </div>
-                    )}
-
-                    {lesson.locked && (
-                      <div className="bg-slate-500 text-white px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 shadow-lg">
-                        <Lock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                        <span className="hidden sm:inline">Locked</span>
-                      </div>
-                    )}
-                  </div>
-
-                  <CardContent className="p-4 sm:p-5 md:p-6 lg:p-7 pt-12 sm:pt-14">
-                    <div className="flex flex-col gap-4 sm:gap-5 lg:gap-6">
-                      <div className="flex-1">
-                        <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3 flex-wrap">
-                          <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold flex-1 min-w-0 pr-24 sm:pr-28">
-                            {lesson.title}
-                          </h3>
+                    {/* Status badges */}
+                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 lg:top-5 lg:right-5 flex flex-col items-end gap-1.5 sm:gap-2">
+                      {lesson.practiceCount > 0 && (
+                        <div className="bg-green-500 dark:bg-green-600 text-white px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 shadow-lg">
+                          <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-white" />
+                          <span className="hidden sm:inline">Practiced {lesson.practiceCount}x</span>
+                          <span className="sm:hidden">×{lesson.practiceCount}</span>
                         </div>
-                        <p className="text-muted-foreground mb-3 sm:mb-4 lg:mb-5 text-xs sm:text-sm md:text-base line-clamp-2">
-                          {lesson.description}
-                        </p>
+                      )}
 
-                        <div className="flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-5 text-xs sm:text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1.5 sm:gap-2">
-                            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 flex-shrink-0" />
-                            <span className="font-medium">{lesson.duration}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5 sm:gap-2">
-                            <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-yellow-500 flex-shrink-0" />
-                            <span className="font-medium">+{lesson.xp} XP</span>
-                          </div>
-                          <div className="flex items-center gap-1.5 sm:gap-2">
-                            <span className="font-medium">{lesson.questions} Questions</span>
-                          </div>
+                      {lesson.bestAccuracy !== null && (
+                        <div className="bg-yellow-500 dark:bg-yellow-600 text-white px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold shadow-lg">
+                          Best: {Math.round(lesson.bestAccuracy)}%
                         </div>
-                      </div>
+                      )}
 
-                      {lesson.locked ? (
-                        <Button
-                          disabled
-                          className="w-full h-10 sm:h-11 md:h-12 lg:h-14 px-4 sm:px-6 lg:px-8 text-xs sm:text-sm md:text-base font-bold"
-                        >
-                          <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 mr-1.5 sm:mr-2" />
-                          <span className="hidden sm:inline">Complete previous lessons</span>
-                          <span className="sm:hidden">Locked</span>
-                        </Button>
-                      ) : (
-                        <Link href={`/practice/${skillId}/${lesson.id}`} className="w-full">
-                          <Button
-                            className="w-full h-10 sm:h-11 md:h-12 lg:h-14 px-4 sm:px-6 lg:px-8 text-xs sm:text-sm md:text-base font-bold shadow-lg hover:shadow-xl transition-all hover:scale-105"
-                            style={{
-                              background: `linear-gradient(135deg, ${skill.colorStart}, ${skill.colorEnd})`,
-                            }}
-                          >
-                            <span className="hidden sm:inline">
-                              {lesson.completed ? "Practice Again" : "Start Lesson"}
-                            </span>
-                            <span className="sm:hidden">
-                              {lesson.completed ? "Again" : "Start"}
-                            </span>
-                            <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 ml-1.5 sm:ml-2 rotate-180" />
-                          </Button>
-                        </Link>
+                      {lesson.isLocked && (
+                        <div className="bg-slate-500 dark:bg-slate-600 text-white px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-bold flex items-center gap-1 sm:gap-1.5 shadow-lg">
+                          <Lock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                          <span className="hidden sm:inline">Locked</span>
+                        </div>
                       )}
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+
+                    <CardContent className="p-4 sm:p-5 md:p-6 lg:p-7 pt-12 sm:pt-14">
+                      <div className="flex flex-col gap-4 sm:gap-5 lg:gap-6">
+                        <div className="flex-1">
+                          <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3 flex-wrap">
+                            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold flex-1 min-w-0 pr-24 sm:pr-28 text-slate-900 dark:text-white">
+                              {lesson.title}
+                            </h3>
+                            <Badge className={`${levelColors[lesson.difficulty as Difficulty]} text-white text-[10px] sm:text-xs absolute top-3 left-3 sm:top-4 sm:left-4`}>
+                              {lesson.difficulty?.toUpperCase()}
+                            </Badge>
+                          </div>
+                          <p className="text-slate-600 dark:text-slate-400 mb-3 sm:mb-4 lg:mb-5 text-xs sm:text-sm md:text-base line-clamp-2">
+                            {lesson.description}
+                          </p>
+
+                          <div className="flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-5 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                              <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 flex-shrink-0" />
+                              <span className="font-medium">{lesson.durationMinutes} min</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                              <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-yellow-500 dark:text-yellow-400 flex-shrink-0" />
+                              <span className="font-medium">+{lesson.xpReward || (lesson.durationMinutes * 10)} XP</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                              <span className="font-medium">{lesson.totalQuestions || 10} Questions</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {lesson.isLocked ? (
+                          <Button
+                            disabled
+                            className="w-full h-10 sm:h-11 md:h-12 lg:h-14 px-4 sm:px-6 lg:px-8 text-xs sm:text-sm md:text-base font-bold bg-slate-400 dark:bg-slate-700 text-white"
+                          >
+                            <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 mr-1.5 sm:mr-2" />
+                            <span className="hidden sm:inline">Complete previous lessons</span>
+                            <span className="sm:hidden">Locked</span>
+                          </Button>
+                        ) : (
+                          <Link href={`/practice/${skillId}/${lesson.id}`} className="w-full">
+                            <Button
+                              className="w-full h-10 sm:h-11 md:h-12 lg:h-14 px-4 sm:px-6 lg:px-8 text-xs sm:text-sm md:text-base font-bold shadow-lg hover:shadow-xl transition-all hover:scale-105 text-white border-0"
+                              style={{
+                                background: `linear-gradient(135deg, ${skill.colorStart}, ${skill.colorEnd})`,
+                              }}
+                            >
+                              <span className="hidden sm:inline">
+                                {lesson.practiceCount > 0 ? "Practice Again" : "Start Lesson"}
+                              </span>
+                              <span className="sm:hidden">
+                                {lesson.practiceCount > 0 ? "Again" : "Start"}
+                              </span>
+                              <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 ml-1.5 sm:ml-2 rotate-180" />
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </main>

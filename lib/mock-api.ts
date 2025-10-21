@@ -1,5 +1,7 @@
-// Mock API cho authentication
-// Thay thế cho việc gọi API thật tới localhost:3001
+// lib/mock-api-enhanced.ts
+// Enhanced Mock API with Language Management
+
+import { getUserLanguages, setActiveLanguage, addLanguage, UserLanguage } from './language-utils'
 
 interface User {
   id: number
@@ -18,6 +20,8 @@ interface LoginResponse {
     email: string
     username: string
     role: "user" | "admin"
+    activeLanguage: string | null
+    languages: UserLanguage[]
   }
 }
 
@@ -29,10 +33,22 @@ interface RegisterResponse {
     userId: number
     email: string
     username: string
+    role: "user"
+    activeLanguage: null
+    languages: []
   }
 }
 
-// Mock database - Lưu trong memory (hoặc có thể dùng localStorage để persist)
+interface LanguageSelectionResponse {
+  success: boolean
+  message: string
+  data: {
+    languageCode: string
+    languages: UserLanguage[]
+  }
+}
+
+// Mock database
 const MOCK_USERS: User[] = [
   {
     id: 1,
@@ -50,7 +66,7 @@ const MOCK_USERS: User[] = [
   },
 ]
 
-// Load users from localStorage if exists
+// Load users from localStorage
 const loadUsers = (): User[] => {
   if (typeof window === "undefined") return MOCK_USERS
   
@@ -81,12 +97,12 @@ const generateToken = (userId: number, role: string): string => {
 // Simulate network delay
 const delay = (ms: number = 800) => new Promise((resolve) => setTimeout(resolve, ms))
 
-// Mock Login API
-export const mockLogin = async (
+// Mock Login API with Language Data
+export const mockLoginWithLanguage = async (
   email: string,
   password: string
 ): Promise<LoginResponse> => {
-  await delay() // Simulate network delay
+  await delay()
 
   const users = loadUsers()
   const user = users.find((u) => u.email === email && u.password === password)
@@ -100,6 +116,10 @@ export const mockLogin = async (
   }
 
   const token = generateToken(user.id, user.role)
+  
+  // Get user's languages
+  const userLanguages = getUserLanguages(user.id.toString())
+  const activeLanguage = userLanguages.find(lang => lang.isActive)
 
   return {
     success: true,
@@ -110,17 +130,19 @@ export const mockLogin = async (
       email: user.email,
       username: user.username,
       role: user.role,
+      activeLanguage: activeLanguage?.code || null,
+      languages: userLanguages,
     },
   }
 }
 
 // Mock Register API
-export const mockRegister = async (
+export const mockRegisterWithLanguage = async (
   username: string,
   email: string,
   password: string
 ): Promise<RegisterResponse> => {
-  await delay() // Simulate network delay
+  await delay()
 
   const users = loadUsers()
 
@@ -164,12 +186,75 @@ export const mockRegister = async (
       userId: newUser.id,
       email: newUser.email,
       username: newUser.username,
+      role: "user",
+      activeLanguage: null,
+      languages: [],
     },
   }
 }
 
-// Mock Get User Info API
-export const mockGetUserInfo = async (userId: number) => {
+// Mock Language Selection API
+export const mockSelectLanguage = async (
+  userId: number,
+  languageCode: string
+): Promise<LanguageSelectionResponse> => {
+  await delay(1000)
+
+  // Add language and set as active
+  addLanguage(userId.toString(), languageCode, true)
+  
+  // Get updated languages
+  const userLanguages = getUserLanguages(userId.toString())
+
+  return {
+    success: true,
+    message: "Ngôn ngữ đã được chọn thành công!",
+    data: {
+      languageCode,
+      languages: userLanguages,
+    },
+  }
+}
+
+// Mock Switch Language API
+export const mockSwitchLanguage = async (
+  userId: number,
+  languageCode: string
+): Promise<LanguageSelectionResponse> => {
+  await delay(500)
+
+  // Set language as active
+  setActiveLanguage(userId.toString(), languageCode)
+  
+  // Get updated languages
+  const userLanguages = getUserLanguages(userId.toString())
+
+  return {
+    success: true,
+    message: "Đã chuyển đổi ngôn ngữ!",
+    data: {
+      languageCode,
+      languages: userLanguages,
+    },
+  }
+}
+
+// Mock Get User Languages API
+export const mockGetUserLanguages = async (
+  userId: number
+): Promise<{ success: boolean; data: UserLanguage[] }> => {
+  await delay(300)
+
+  const userLanguages = getUserLanguages(userId.toString())
+
+  return {
+    success: true,
+    data: userLanguages,
+  }
+}
+
+// Mock Get User Info with Language Data
+export const mockGetUserInfoWithLanguage = async (userId: number) => {
   await delay(500)
 
   const users = loadUsers()
@@ -183,6 +268,9 @@ export const mockGetUserInfo = async (userId: number) => {
     }
   }
 
+  const userLanguages = getUserLanguages(userId.toString())
+  const activeLanguage = userLanguages.find(lang => lang.isActive)
+
   return {
     success: true,
     message: "User info retrieved",
@@ -193,22 +281,26 @@ export const mockGetUserInfo = async (userId: number) => {
         email: user.email,
         displayName: user.username,
         avatarUrl: `https://ui-avatars.com/api/?name=${user.username}&background=random`,
-        level: 1,
-        totalXp: 0,
+        level: activeLanguage?.progress?.level || 1,
+        totalXp: activeLanguage?.progress?.xp || 0,
         currentStreak: 0,
         maxStreak: 0,
         totalGems: 0,
         hearts: 5,
         role: user.role,
-        defaultLanguageId: null,
+        activeLanguage: activeLanguage?.code || null,
         studyMinutesPerDay: 30,
         currentAvatarId: null,
       },
-      selectedLanguage: null,
-      progress: null,
+      languages: userLanguages,
+      activeLanguage: activeLanguage || null,
     },
   }
 }
+
+// Backward compatibility - keep original functions
+export const mockLogin = mockLoginWithLanguage
+export const mockRegister = mockRegisterWithLanguage
 
 // Mock Logout
 export const mockLogout = () => {
@@ -218,19 +310,27 @@ export const mockLogout = () => {
   localStorage.removeItem("user_id")
   localStorage.removeItem("user_role")
   localStorage.removeItem("user_info")
+  localStorage.removeItem("auth_token")
+  localStorage.removeItem("user")
 }
 
 // Check if user is authenticated
 export const isAuthenticated = (): boolean => {
   if (typeof window === "undefined") return false
   
-  const token = localStorage.getItem("access_token")
+  const token = localStorage.getItem("access_token") || localStorage.getItem("auth_token")
   return !!token
 }
 
 // Get current user role
 export const getCurrentUserRole = (): "user" | "admin" | null => {
   if (typeof window === "undefined") return null
+  
+  const storedUser = localStorage.getItem("user")
+  if (storedUser) {
+    const userData = JSON.parse(storedUser)
+    return userData.role
+  }
   
   const role = localStorage.getItem("user_role")
   return role as "user" | "admin" | null

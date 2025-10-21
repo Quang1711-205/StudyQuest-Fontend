@@ -1,3 +1,4 @@
+// app/selectLanguage/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -73,25 +74,69 @@ export default function SelectLanguagePage() {
     setIsLoading(true);
 
     try {
-      // TODO: Replace this with your actual API call to save the selected language
-      const response = await fetch('/api/user/language', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ language: languageCode }),
-      });
-
-      if (response.ok) {
-        // Redirect to dashboard after successful language selection
-        router.push('/dashboard');
-      } else {
-        console.error('Failed to save language selection');
-        setIsLoading(false);
-        setSelectedLanguage(null);
+      // Get user info from localStorage
+      const storedUser = localStorage.getItem('user');
+      if (!storedUser) {
+        throw new Error('User not found');
       }
+
+      const userData = JSON.parse(storedUser);
+      const userId = userData.id;
+
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Lấy danh sách ngôn ngữ hiện tại từ localStorage
+      const userLanguagesKey = `user_languages_${userId}`;
+      const existingLanguages = localStorage.getItem(userLanguagesKey);
+      let languagesArray = existingLanguages ? JSON.parse(existingLanguages) : [];
+
+      // Thêm ngôn ngữ mới với isActive = true, các ngôn ngữ khác set false
+      languagesArray = languagesArray.map((lang: any) => ({
+        ...lang,
+        isActive: false,
+      }));
+
+      // Kiểm tra xem ngôn ngữ đã tồn tại chưa
+      const existingLangIndex = languagesArray.findIndex(
+        (lang: any) => lang.code === languageCode
+      );
+
+      if (existingLangIndex >= 0) {
+        languagesArray[existingLangIndex].isActive = true;
+      } else {
+        const selectedLang = languages.find((l) => l.code === languageCode);
+        languagesArray.push({
+          code: languageCode,
+          name: selectedLang?.name || '',
+          isActive: true,
+          addedAt: new Date().toISOString(),
+          progress: {
+            level: 1,
+            xp: 0,
+            lessonsCompleted: 0,
+          },
+        });
+      }
+
+      // Lưu vào localStorage
+      localStorage.setItem(userLanguagesKey, JSON.stringify(languagesArray));
+
+      // Lưu active language vào user data
+      const updatedUser = {
+        ...userData,
+        activeLanguage: languageCode,
+      };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+
+      console.log('Language saved:', languageCode);
+      console.log('User languages:', languagesArray);
+
+      // Redirect to dashboard
+      router.push('/dashboard');
     } catch (error) {
       console.error('Error saving language:', error);
+      alert('Có lỗi xảy ra khi lưu ngôn ngữ. Vui lòng thử lại!');
       setIsLoading(false);
       setSelectedLanguage(null);
     }
@@ -102,11 +147,14 @@ export default function SelectLanguagePage() {
       <div className="max-w-6xl w-full">
         {/* Header */}
         <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl mx-auto mb-6 shadow-lg">
+            <span className="text-3xl font-bold text-white">SQ</span>
+          </div>
           <h1 className="text-5xl font-bold text-gray-900 mb-4">
-            Choose Your Language
+            Chọn Ngôn Ngữ Của Bạn
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Select the language you want to learn and start your journey to fluency
+            Hãy chọn ngôn ngữ bạn muốn học và bắt đầu hành trình chinh phục ngôn ngữ mới
           </p>
         </div>
 
@@ -156,7 +204,7 @@ export default function SelectLanguagePage() {
 
         {/* Footer Text */}
         <p className="text-center text-gray-500 text-sm">
-          Don't worry! You can change your language preference anytime from your settings.
+          Đừng lo! Bạn có thể thay đổi ngôn ngữ học bất cứ lúc nào từ cài đặt.
         </p>
       </div>
     </div>
